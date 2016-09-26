@@ -24,7 +24,7 @@ struct GameLayer {
     static let message   : CGFloat = 4
 }
 
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate{
     
     var playableRect = CGRect.zero
     var tapCount = 0
@@ -66,6 +66,8 @@ class GameScene: SKScene {
     // MARK: - Lifecycle -
     override func didMove(to view: SKView) {
         setupUI()
+        
+        physicsWorld.contactDelegate = self
         
         makeSprites(howMany: 10)
         unpauseSprites()
@@ -144,18 +146,17 @@ class GameScene: SKScene {
         
         totalSprites = totalSprites + howMany
         otherLabel.text = "Num Sprites: \(totalSprites)"
-        var s: DiamondSprite
+        var s: SKSpriteNode
         
         for _ in 0...howMany-1{
             
             let randY = randInRange(min: Int(playableRect.midY + 100), max: Int(playableRect.maxY - 50))
             let randX = randInRange(min: Int(playableRect.minX + 50), max: Int(playableRect.maxX - 50))
-            s = DiamondSprite(size: CGSize(width: 60, height: 100), lineWidth: 10, strokeColor: SKColor.green, fillColor: SKColor.magenta)
-            s.name = "diamond"
+            s = SKSpriteNode(imageNamed: "enemy")
+            s.name = "enemy"
             s.position = CGPoint(x: randX, y: randY)
-            s.fwd = CGPoint.randomUnitVector()
             
-            s.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 50, height: 90))
+            s.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: s.frame.width, height: s.frame.height))
             s.physicsBody?.isDynamic = true
             s.physicsBody?.categoryBitMask = PhysicsCategory.Enemy
             s.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile
@@ -326,7 +327,7 @@ class GameScene: SKScene {
     override func update(_ currentTime: TimeInterval){
         
         calculateDeltaTime(currentTime: currentTime)
-        moveSprites(dt: CGFloat(dt))
+        //moveSprites(dt: CGFloat(dt))
         movePlayer(dt: CGFloat(dt))
     }
 }
