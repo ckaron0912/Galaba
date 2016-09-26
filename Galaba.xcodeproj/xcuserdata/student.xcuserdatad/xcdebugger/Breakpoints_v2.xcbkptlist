@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Galaba/GameScene.swift"
-            timestampString = "496268259.174547"
+            timestampString = "496614569.591926"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "49"
-            endingLineNumber = "49"
+            startingLineNumber = "56"
+            endingLineNumber = "56"
             landmarkName = "GameScene"
             landmarkType = "3">
          </BreakpointContent>
@@ -26,12 +26,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Galaba/GameScene.swift"
-            timestampString = "496550498.18603"
+            timestampString = "496614742.950037"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "318"
-            endingLineNumber = "318"
-            landmarkName = "touchesBegan(_:with:)"
+            startingLineNumber = "164"
+            endingLineNumber = "164"
+            landmarkName = "makeSprites(howMany:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -42,12 +42,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Galaba/GameScene.swift"
-            timestampString = "496550614.955482"
+            timestampString = "496614742.950037"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "160"
-            endingLineNumber = "160"
-            landmarkName = "makeSprites(howMany:)"
+            startingLineNumber = "308"
+            endingLineNumber = "308"
+            landmarkName = "projectileDidCollideWithEnemy(projectile:enemy:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

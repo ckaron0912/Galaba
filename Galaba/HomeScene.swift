@@ -30,6 +30,12 @@ class HomeScene: SKScene {
     override func didMove(to view:SKView) {
         
         backgroundColor = GameData.scene.backgroundColor
+        
+        let background = SKSpriteNode(imageNamed: "space_background")
+        background.position = CGPoint(x: size.width/2, y: size.height/2)
+        background.zPosition = GameLayer.background
+        addChild(background)
+        
         let label = SKLabelNode(fontNamed: GameData.font.mainFont)
         label.text = "Galaba"
         
@@ -37,17 +43,18 @@ class HomeScene: SKScene {
         
         label.position = CGPoint(x:size.width/2, y:size.height/2)
         
-        label.zPosition = 1
+        label.zPosition = GameLayer.hud
         addChild(label)
         
         // label3 was an image - I'll let you do that on your own
         
-        let label4 = SKLabelNode(fontNamed: GameData.font.mainFont)
-        label4.text = "Tap to continue"
-        label4.fontColor = UIColor.red
-        label4.fontSize = 40
-        label4.position = CGPoint(x:size.width/2, y:size.height/2 - 400)
-        addChild(label4)
+        let label2 = SKLabelNode(fontNamed: GameData.font.mainFont)
+        label2.text = "Tap to continue"
+        label2.fontColor = UIColor.red
+        label2.fontSize = 40
+        label2.position = CGPoint(x:size.width/2, y:size.height/2 - 400)
+        label2.zPosition = GameLayer.hud
+        addChild(label2)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

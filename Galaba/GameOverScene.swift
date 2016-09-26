@@ -27,24 +27,31 @@ class GameOverScene: SKScene {
     
     // MARK: - Lifecycle -
     override func didMove(to view: SKView){
-        backgroundColor = GameData.scene.backgroundColor
+        
+        let background = SKSpriteNode(imageNamed: "space_background")
+        background.position = CGPoint(x: size.width/2, y: size.height/2)
+        background.zPosition = GameLayer.background
+        addChild(background)
         
         let label = SKLabelNode(fontNamed: GameData.font.mainFont)
         label.text = "Game Over"
         label.fontSize = 100
         label.position = CGPoint(x:size.width/2, y:size.height/2 + 300)
+        label.zPosition = GameLayer.hud
         addChild(label)
         
         let label2 = SKLabelNode(fontNamed: GameData.font.mainFont)
         label2.text = "You beat level \(results.levelNum)!"
         label2.fontSize = 70
         label2.position = CGPoint(x:size.width/2, y:size.height/2 + 100)
+        label2.zPosition = GameLayer.hud
         addChild(label2)
         
         let label3 = SKLabelNode(fontNamed: GameData.font.mainFont)
-        label3.text = "You got \(results.totalScore) total diamonds!"
+        label3.text = "You destroyed \(results.totalScore) total ships!"
         label3.fontSize = 60
         label3.position = CGPoint(x:size.width/2, y:size.height/2 - 100)
+        label3.zPosition = GameLayer.hud
         addChild(label3)
         
         let label4 = SKLabelNode(fontNamed: GameData.font.mainFont)
@@ -52,6 +59,7 @@ class GameOverScene: SKScene {
         label4.fontColor = UIColor.red
         label4.fontSize = 70
         label4.position = CGPoint(x:size.width/2, y:size.height/2 - 400)
+        label4.zPosition = GameLayer.hud
         addChild(label4)
         
     }

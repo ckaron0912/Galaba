@@ -18,7 +18,7 @@ struct GameData{
     }
     
     struct hud{
-        static let backgroundColor = SKColor.red
+        static let backgroundColor = SKColor.black
         static let fontSize = CGFloat(44.0)
         static let fontColorWhite = SKColor(red: 0.90, green: 0.90, blue: 0.90, alpha: 1.0)
         static let marginV = CGFloat(20.0)
@@ -35,7 +35,8 @@ struct GameData{
     }
     
     struct scene {
-        static let backgroundColor = SKColor(red: 0.878, green: 0.69, blue: 1.0, alpha: 1.0)
+        static let backgroundColor = SKColor.black
+        static let backgroundImage = SKSpriteNode(imageNamed: "space_background")
     }
 }
 

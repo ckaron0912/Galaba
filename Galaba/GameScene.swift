@@ -28,15 +28,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     var playableRect = CGRect.zero
     var tapCount = 0
-    var totalSprites = 0
+    var totalSprites: Int = 0 {
+        
+        willSet(numSprites){
+            
+            otherLabel.text = "Enemies left \(numSprites)"
+        }
+    }
     var levelNum: Int
     var levelScore: Int = 0 {
         
-        didSet(score){
+        willSet(score){
             
             scoreLabel.text = "Score: \(score)"
         }
     }
+    
     var totalScore: Int
     var lastUpdateTime: TimeInterval = 0
     var dt: TimeInterval = 0
@@ -110,11 +117,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         scoreLabel.verticalAlignmentMode = .top
         scoreLabel.horizontalAlignmentMode = .left
         // next 2 lines calculate the max width of scoreLabel
-        scoreLabel.text = "Score: 000"
-        let scoreLabelWidth = scoreLabel.frame.size.width
-        
-        // here is the starting text of scoreLabel
         scoreLabel.text = "Score: \(levelScore)"
+        let scoreLabelWidth = scoreLabel.frame.size.width
         
         scoreLabel.position = CGPoint(x: playableRect.maxX - scoreLabelWidth - marginH,y: playableRect.maxY - marginV)
         scoreLabel.zPosition = GameLayer.hud
@@ -125,19 +129,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         otherLabel.position = CGPoint(x: marginH, y: playableRect.minY + marginV)
         otherLabel.verticalAlignmentMode = .bottom
         otherLabel.horizontalAlignmentMode = .left
-        otherLabel.text = "Num Sprites: 0"
+        otherLabel.text = "Enemies left: 0"
         otherLabel.zPosition = GameLayer.hud
         addChild(otherLabel)
         
-        let background = SKSpriteNode(imageNamed: "1080x1920-bg")
+        let background = SKSpriteNode(imageNamed: "space_background")
         background.position = CGPoint(x: size.width/2, y: size.height/2)
         background.zPosition = GameLayer.background
         addChild(background)
         
         let ship = SKSpriteNode(imageNamed: "Spaceship")
-        ship.setScale(0.5)
+        ship.setScale(0.25)
         ship.name = "ship"
-        ship.position = CGPoint(x: playableRect.midX, y: playableRect.midY - 300)
+        ship.position = CGPoint(x: playableRect.midX, y: playableRect.midY - 250)
         ship.zPosition = GameLayer.sprite
         addChild(ship)
     }
@@ -156,7 +160,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             s.name = "enemy"
             s.position = CGPoint(x: randX, y: randY)
             
-            s.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: s.frame.width, height: s.frame.height))
+            s.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: s.frame.width - 10, height: s.frame.height / 2))
             s.physicsBody?.isDynamic = true
             s.physicsBody?.categoryBitMask = PhysicsCategory.Enemy
             s.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile
@@ -165,6 +169,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             
             s.zPosition = GameLayer.sprite
             addChild(s)
+            
+            /*//debug for enemy bounding box
+            let size = CGSize(width: s.frame.width - 10, height: s.frame.height / 2)
+            let halfHeight = size.height / 2
+            let halfWidth = size.width / 2
+            
+            let topLeft = CGPoint(x: -halfWidth, y: halfHeight)
+            let topRight = CGPoint(x: halfWidth, y: halfHeight)
+            let bottomRight = CGPoint(x: halfWidth, y: -halfHeight)
+            let bottomLeft = CGPoint(x: -halfWidth, y: -halfHeight)
+            
+            let pathToDraw = CGMutablePath()
+            pathToDraw.move(to: topLeft)
+            pathToDraw.addLine(to: topRight)
+            pathToDraw.addLine(to: bottomRight)
+            pathToDraw.addLine(to: bottomLeft)
+            pathToDraw.closeSubpath()
+            
+            let box = SKShapeNode(path: pathToDraw)
+            
+            box.position = s.position
+            box.zPosition = GameLayer.projectile
+            box.strokeColor = SKColor.red
+            box.lineWidth = CGFloat(1)
+            box.fillColor = SKColor.red
+            
+            addChild(box)
+            */
         }
     }
     
@@ -231,7 +263,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             xVelocity = 0
         }
         
-        print("xVelocity = \(xVelocity)")
+        //print("xVelocity = \(xVelocity)")
         
         if let playerSprite = childNode(withName: "ship"){
             
@@ -250,7 +282,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     }
     
     //MARK: - Events -
-    func didBeginContact(contact: SKPhysicsContact){
+    func didBegin(_ contact: SKPhysicsContact){
         
         var firstBody: SKPhysicsBody
         var secondBody: SKPhysicsBody
@@ -272,7 +304,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     }
     
     func projectileDidCollideWithEnemy(projectile: SKSpriteNode, enemy: SKSpriteNode){
-    
+        
         print("Hit!")
         projectile.removeFromParent()
         enemy.removeFromParent()
@@ -307,7 +339,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             
             let projectile = SKSpriteNode(imageNamed: "normal_shot")
             projectile.position = CGPoint(x: playerSprite.position.x, y: playerSprite.position.y + (playerSprite.frame.height / 2))
-            projectile.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: projectile.frame.width - 4, height: projectile.frame.height - 4))
+            projectile.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: projectile.frame.width - 10, height: (projectile.frame.height / 2) + 10))
             projectile.physicsBody?.isDynamic = true
             projectile.physicsBody?.categoryBitMask = PhysicsCategory.Projectile
             projectile.physicsBody?.contactTestBitMask = PhysicsCategory.Enemy
@@ -320,6 +352,38 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             let actionMove = SKAction.moveTo(y: playableRect.maxY + (projectile.frame.height / 2), duration: 0.5)
             let actionMoveDone = SKAction.removeFromParent()
             projectile.run(SKAction.sequence([actionMove, actionMoveDone]))
+            
+            /*//debug for projectile bounding box
+            let size = CGSize(width: projectile.frame.width - 10, height: projectile.frame.height / 2 + 10)
+            let halfHeight = size.height / 2
+            let halfWidth = size.width / 2
+            
+            let topLeft = CGPoint(x: -halfWidth, y: halfHeight)
+            let topRight = CGPoint(x: halfWidth, y: halfHeight)
+            let bottomRight = CGPoint(x: halfWidth, y: -halfHeight)
+            let bottomLeft = CGPoint(x: -halfWidth, y: -halfHeight)
+            
+            let pathToDraw = CGMutablePath()
+            pathToDraw.move(to: topLeft)
+            pathToDraw.addLine(to: topRight)
+            pathToDraw.addLine(to: bottomRight)
+            pathToDraw.addLine(to: bottomLeft)
+            pathToDraw.closeSubpath()
+            
+            let box = SKShapeNode(path: pathToDraw)
+            
+            box.position = projectile.position
+            box.zPosition = GameLayer.projectile
+            box.strokeColor = SKColor.red
+            box.lineWidth = CGFloat(1)
+            box.fillColor = SKColor.red
+            
+            let actionBoxMove = SKAction.moveTo(y: playableRect.maxY + (box.frame.height / 2), duration: 0.5)
+            let actionBoxMoveDone = SKAction.removeFromParent()
+            box.run(SKAction.sequence([actionBoxMove, actionBoxMoveDone]))
+            
+            addChild(box)
+            */
         }
     }
     
