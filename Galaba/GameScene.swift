@@ -148,10 +148,20 @@ class GameScene: SKScene {
         
         for _ in 0...howMany-1{
             
+            let randY = randInRange(min: Int(playableRect.midY + 100), max: Int(playableRect.maxY - 50))
+            let randX = randInRange(min: Int(playableRect.minX + 50), max: Int(playableRect.maxX - 50))
             s = DiamondSprite(size: CGSize(width: 60, height: 100), lineWidth: 10, strokeColor: SKColor.green, fillColor: SKColor.magenta)
             s.name = "diamond"
-            s.position = randomCGPointInRect(playableRect, margin: 300)
+            s.position = CGPoint(x: randX, y: randY)
             s.fwd = CGPoint.randomUnitVector()
+            
+            s.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 50, height: 90))
+            s.physicsBody?.isDynamic = true
+            s.physicsBody?.categoryBitMask = PhysicsCategory.Enemy
+            s.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile
+            s.physicsBody?.collisionBitMask = PhysicsCategory.None
+            s.physicsBody?.affectedByGravity = false
+            
             s.zPosition = GameLayer.sprite
             addChild(s)
         }
@@ -187,17 +197,13 @@ class GameScene: SKScene {
                     
                     s.reflectX()
                     s.update(dt: dt)
-                    self.levelScore = self.levelScore + 1
-                    self.totalScore = self.totalScore + 1
                 }
                 
                 // check top/bottom
-                if s.position.y <= self.playableRect.minY + halfHeight || s.position.y >= self.playableRect.maxY - halfHeight{
+                if s.position.y <= (self.playableRect.midY + 100) + halfHeight || s.position.y >= self.playableRect.maxY - halfHeight{
                     
                     s.reflectY()
                     s.update(dt: dt)
-                    self.levelScore = self.levelScore + 1
-                    self.totalScore = self.totalScore + 1
                 }
             })
         }
@@ -236,8 +242,60 @@ class GameScene: SKScene {
         }
         
     }
-
+    
+    func randInRange(min: Int, max: Int) -> Int{
+        
+        return Int(arc4random_uniform(UInt32(max - min)) + UInt32(min))
+    }
+    
     //MARK: - Events -
+    func didBeginContact(contact: SKPhysicsContact){
+        
+        var firstBody: SKPhysicsBody
+        var secondBody: SKPhysicsBody
+        
+        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask{
+            
+            firstBody = contact.bodyA
+            secondBody = contact.bodyB
+        } else{
+            
+            firstBody = contact.bodyB
+            secondBody = contact.bodyA
+        }
+        
+        if ((firstBody.categoryBitMask & PhysicsCategory.Enemy != 0) && (secondBody.categoryBitMask & PhysicsCategory.Projectile != 0)){
+            
+            projectileDidCollideWithEnemy(projectile: firstBody.node as! SKSpriteNode, enemy: secondBody.node as! SKSpriteNode)
+        }
+    }
+    
+    func projectileDidCollideWithEnemy(projectile: SKSpriteNode, enemy: SKSpriteNode){
+    
+        print("Hit!")
+        projectile.removeFromParent()
+        enemy.removeFromParent()
+        
+        totalSprites -= 1
+        levelScore += 1
+        totalScore += 1
+        
+        if totalSprites > 0{
+            
+            return
+        }
+        
+        if levelNum < GameData.maxLevel{
+            
+            let results = LevelResults(levelNum: levelNum, levelScore: levelScore, totalScore: totalScore, msg: "You finished level \(levelNum)")
+            sceneManager.loadLevelFinishScene(results: results)
+        } else {
+            
+            let results = LevelResults(levelNum: levelNum, levelScore: levelScore, totalScore: totalScore, msg: "You finished level \(levelNum)")
+            sceneManager.loadGameOverScene(results: results)
+        }
+    }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
         guard let touch = touches.first else {
@@ -247,7 +305,7 @@ class GameScene: SKScene {
         if let playerSprite = childNode(withName: "ship"){
             
             let projectile = SKSpriteNode(imageNamed: "normal_shot")
-            projectile.position = playerSprite.position
+            projectile.position = CGPoint(x: playerSprite.position.x, y: playerSprite.position.y + (playerSprite.frame.height / 2))
             projectile.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: projectile.frame.width - 4, height: projectile.frame.height - 4))
             projectile.physicsBody?.isDynamic = true
             projectile.physicsBody?.categoryBitMask = PhysicsCategory.Projectile
@@ -261,17 +319,6 @@ class GameScene: SKScene {
             let actionMove = SKAction.moveTo(y: playableRect.maxY + (projectile.frame.height / 2), duration: 0.5)
             let actionMoveDone = SKAction.removeFromParent()
             projectile.run(SKAction.sequence([actionMove, actionMoveDone]))
-        }
-        
-        
-        if levelNum < GameData.maxLevel{
-            
-            let results = LevelResults(levelNum: levelNum, levelScore: levelScore, totalScore: totalScore, msg: "You finished level \(levelNum)")
-            sceneManager.loadLevelFinishScene(results: results)
-        } else {
-            
-            let results = LevelResults(levelNum: levelNum, levelScore: levelScore, totalScore: totalScore, msg: "You finished level \(levelNum)")
-            sceneManager.loadGameOverScene(results: results)
         }
     }
     

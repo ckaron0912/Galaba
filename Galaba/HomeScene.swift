@@ -31,27 +31,21 @@ class HomeScene: SKScene {
         
         backgroundColor = GameData.scene.backgroundColor
         let label = SKLabelNode(fontNamed: GameData.font.mainFont)
-        let label2 = SKLabelNode(fontNamed: GameData.font.mainFont)
-        label.text = "Diamond"
-        label2.text = "Blast"
+        label.text = "Galaba"
         
-        label.fontSize = 200
-        label2.fontSize = 200
+        label.fontSize = 100
         
-        label.position = CGPoint(x:size.width/2, y:size.height/2 + 400)
-        label2.position = CGPoint(x:size.width/2, y:size.height/2 - 200)
+        label.position = CGPoint(x:size.width/2, y:size.height/2)
         
         label.zPosition = 1
-        label2.zPosition = 1;
         addChild(label)
-        addChild(label2)
         
         // label3 was an image - I'll let you do that on your own
         
         let label4 = SKLabelNode(fontNamed: GameData.font.mainFont)
         label4.text = "Tap to continue"
         label4.fontColor = UIColor.red
-        label4.fontSize = 70
+        label4.fontSize = 40
         label4.position = CGPoint(x:size.width/2, y:size.height/2 - 400)
         addChild(label4)
     }

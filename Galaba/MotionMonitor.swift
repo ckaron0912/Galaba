@@ -39,8 +39,8 @@ class MotionMonitor{
                 self.gravityVectorNormalized = CGVector(dx: CGFloat(data!.gravity.x), dy: CGFloat(data!.gravity.y))
                 self.gravityVector = CGVector(dx: CGFloat(data!.gravity.x), dy: CGFloat(data!.gravity.y)) * 9.8
                 
-                print("self.rotation = \(self.rotation)")
-                print("self.gravityVectorNormalized = \(self.gravityVectorNormalized)")
+                //print("self.rotation = \(self.rotation)")
+                //print("self.gravityVectorNormalized = \(self.gravityVectorNormalized)")
             }
         } else{
             
