@@ -35,7 +35,7 @@ class MotionMonitor{
                     return
                 }
                 
-                self.rotation = CGFloat(atan2(data!.gravity.x, data!.gravity.y)) - CGFloat.pi
+                self.rotation = CGFloat(atan2(data!.gravity.x, data!.gravity.y)) - (CGFloat.pi / 2)
                 self.gravityVectorNormalized = CGVector(dx: CGFloat(data!.gravity.x), dy: CGFloat(data!.gravity.y))
                 self.gravityVector = CGVector(dx: CGFloat(data!.gravity.x), dy: CGFloat(data!.gravity.y)) * 9.8
                 

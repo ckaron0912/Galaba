@@ -9,11 +9,19 @@
 import SpriteKit
 import GameplayKit
 
+struct PhysicsCategory {
+    static let None      : UInt32 = 0
+    static let All       : UInt32 = UInt32.max
+    static let Enemy   : UInt32 = 0b1       // 1
+    static let Projectile: UInt32 = 0b10      // 2
+}
+
 struct GameLayer {
     static let background: CGFloat = 0
-    static let hud       : CGFloat = 1
+    static let projectile: CGFloat = 1
     static let sprite    : CGFloat = 2
-    static let message   : CGFloat = 3
+    static let hud       : CGFloat = 3
+    static let message   : CGFloat = 4
 }
 
 class GameScene: SKScene {
@@ -127,15 +135,9 @@ class GameScene: SKScene {
         let ship = SKSpriteNode(imageNamed: "Spaceship")
         ship.setScale(0.5)
         ship.name = "ship"
-        ship.position = CGPoint(x: playableRect.midX, y: playableRect.midY)
+        ship.position = CGPoint(x: playableRect.midX, y: playableRect.midY - 300)
         ship.zPosition = GameLayer.sprite
         addChild(ship)
-        
-        let arrow = SKSpriteNode(imageNamed: "arrow")
-        arrow.name = "arrow"
-        arrow.position = CGPoint(x: playableRect.midX, y: playableRect.midY - arrow.size.height)
-        arrow.zPosition = GameLayer.sprite
-        addChild(arrow)
     }
     
     func makeSprites(howMany: Int){
@@ -208,18 +210,10 @@ class GameScene: SKScene {
         run(unpauseAction)
     }
     
-    func rotateArrow(){
-        
-        if let arrow = childNode(withName: "arrow"){
-            
-            arrow.zRotation = MotionMonitor.sharedMotionMonitor.rotation
-        }
-    }
-    
     func movePlayer(dt: CGFloat){
         
         let gravityVector = MotionMonitor.sharedMotionMonitor.gravityVectorNormalized
-        var xVelocity = gravityVector.dx
+        var xVelocity = gravityVector.dy
         xVelocity = xVelocity < -0.33 ? -0.33 : xVelocity
         xVelocity = xVelocity > 0.33 ? 0.33 : xVelocity
         
@@ -235,9 +229,8 @@ class GameScene: SKScene {
         if let playerSprite = childNode(withName: "ship"){
             
             let halfWidth = playerSprite.frame.size.width/2
-            let halfHeight = playerSprite.frame.size.height/2
             let xRange = SKRange(lowerLimit: halfWidth, upperLimit: size.width - halfWidth)
-            let yRange = SKRange(lowerLimit: 0, upperLimit: 0)
+            let yRange = SKRange(lowerLimit: 0, upperLimit: playableRect.maxY)
             playerSprite.constraints = [SKConstraint.positionX(xRange, y: yRange)]
             playerSprite.position.x += xVelocity * GameData.hud.shipMaxSpeedPerSecond * dt
         }
@@ -247,12 +240,29 @@ class GameScene: SKScene {
     //MARK: - Events -
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
-        tapCount = tapCount + 1
-        
-        if tapCount < 3{
-            
+        guard let touch = touches.first else {
             return
         }
+        
+        if let playerSprite = childNode(withName: "ship"){
+            
+            let projectile = SKSpriteNode(imageNamed: "normal_shot")
+            projectile.position = playerSprite.position
+            projectile.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: projectile.frame.width - 4, height: projectile.frame.height - 4))
+            projectile.physicsBody?.isDynamic = true
+            projectile.physicsBody?.categoryBitMask = PhysicsCategory.Projectile
+            projectile.physicsBody?.contactTestBitMask = PhysicsCategory.Enemy
+            projectile.physicsBody?.collisionBitMask = PhysicsCategory.None
+            projectile.physicsBody?.usesPreciseCollisionDetection = true
+            projectile.zPosition = GameLayer.projectile
+            
+            addChild(projectile)
+            
+            let actionMove = SKAction.moveTo(y: playableRect.maxY + (projectile.frame.height / 2), duration: 0.5)
+            let actionMoveDone = SKAction.removeFromParent()
+            projectile.run(SKAction.sequence([actionMove, actionMoveDone]))
+        }
+        
         
         if levelNum < GameData.maxLevel{
             
@@ -270,7 +280,6 @@ class GameScene: SKScene {
         
         calculateDeltaTime(currentTime: currentTime)
         moveSprites(dt: CGFloat(dt))
-        rotateArrow()
         movePlayer(dt: CGFloat(dt))
     }
 }

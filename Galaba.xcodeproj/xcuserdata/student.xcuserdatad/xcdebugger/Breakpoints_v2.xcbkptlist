@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Galaba/GameScene.swift"
-            timestampString = "496270930.318796"
+            timestampString = "496542820.188175"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "275"
-            endingLineNumber = "275"
+            startingLineNumber = "259"
+            endingLineNumber = "259"
             landmarkName = "update(_:)"
             landmarkType = "7">
          </BreakpointContent>
