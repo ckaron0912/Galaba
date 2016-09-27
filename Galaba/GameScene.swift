@@ -10,10 +10,13 @@ import SpriteKit
 import GameplayKit
 
 struct PhysicsCategory {
-    static let None      : UInt32 = 0
-    static let All       : UInt32 = UInt32.max
-    static let Enemy   : UInt32 = 0b1       // 1
-    static let Projectile: UInt32 = 0b10      // 2
+    static let None             : UInt32 = 0
+    static let All              : UInt32 = UInt32.max
+    static let Enemy            : UInt32 = 0b1        // 1
+    static let PProjectile      : UInt32 = 0b10       // 2
+    static let Player           : UInt32 = 0b100      // 4
+    static let EProjectile      : UInt32 = 0b1000     // 8
+    static let AllProjectiles   : UInt32 = 0b1010
 }
 
 struct GameLayer {
@@ -24,7 +27,7 @@ struct GameLayer {
     static let message   : CGFloat = 4
 }
 
-class GameScene: SKScene, SKPhysicsContactDelegate{
+class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var playableRect = CGRect.zero
     var tapCount = 0
@@ -163,7 +166,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             s.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: s.frame.width - 10, height: s.frame.height / 2))
             s.physicsBody?.isDynamic = true
             s.physicsBody?.categoryBitMask = PhysicsCategory.Enemy
-            s.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile
+            s.physicsBody?.contactTestBitMask = PhysicsCategory.PProjectile
             s.physicsBody?.collisionBitMask = PhysicsCategory.None
             s.physicsBody?.affectedByGravity = false
             
@@ -297,9 +300,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             secondBody = contact.bodyA
         }
         
-        if ((firstBody.categoryBitMask & PhysicsCategory.Enemy != 0) && (secondBody.categoryBitMask & PhysicsCategory.Projectile != 0)){
-            
-            projectileDidCollideWithEnemy(projectile: firstBody.node as! SKSpriteNode, enemy: secondBody.node as! SKSpriteNode)
+        if ((firstBody.categoryBitMask & PhysicsCategory.Enemy != 0) && (secondBody.categoryBitMask & PhysicsCategory.PProjectile != 0)){
+            if (firstBody.node != nil && secondBody.node != nil ) {
+                projectileDidCollideWithEnemy(projectile: firstBody.node as! SKSpriteNode, enemy: secondBody.node as! SKSpriteNode)
+            }
         }
     }
     
@@ -341,7 +345,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             projectile.position = CGPoint(x: playerSprite.position.x, y: playerSprite.position.y + (playerSprite.frame.height / 2))
             projectile.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: projectile.frame.width - 10, height: (projectile.frame.height / 2) + 10))
             projectile.physicsBody?.isDynamic = true
-            projectile.physicsBody?.categoryBitMask = PhysicsCategory.Projectile
+            projectile.physicsBody?.categoryBitMask = PhysicsCategory.PProjectile
             projectile.physicsBody?.contactTestBitMask = PhysicsCategory.Enemy
             projectile.physicsBody?.collisionBitMask = PhysicsCategory.None
             projectile.physicsBody?.usesPreciseCollisionDetection = true
