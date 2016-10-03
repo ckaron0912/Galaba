@@ -19,8 +19,9 @@
 		3F47C0E11D918C30000214C6 /* CGPoint+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F47C0DD1D918C30000214C6 /* CGPoint+Extensions.swift */; };
 		3F47C0E21D918C30000214C6 /* GameData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F47C0DE1D918C30000214C6 /* GameData.swift */; };
 		3F47C0E31D918C30000214C6 /* MyUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F47C0DF1D918C30000214C6 /* MyUtils.swift */; };
+		3F4D33C91DA2F5BA00E2A4F6 /* EnemySprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F4D33C81DA2F5BA00E2A4F6 /* EnemySprite.swift */; };
+		3F4D33CD1DA3092900E2A4F6 /* ProjectileSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F4D33CC1DA3092900E2A4F6 /* ProjectileSprite.swift */; };
 		3F83ADF01D944C3F00D6B686 /* HomeScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F83ADEF1D944C3F00D6B686 /* HomeScene.swift */; };
-		3F83ADF21D945AE400D6B686 /* DiamondSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F83ADF11D945AE400D6B686 /* DiamondSprite.swift */; };
 		3F83ADF41D9466A200D6B686 /* LevelResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F83ADF31D9466A200D6B686 /* LevelResults.swift */; };
 		3F83ADF61D94675100D6B686 /* LevelFinishScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F83ADF51D94675100D6B686 /* LevelFinishScene.swift */; };
 		3F83ADF81D946CF800D6B686 /* GameOverScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F83ADF71D946CF800D6B686 /* GameOverScene.swift */; };
@@ -43,8 +44,9 @@
 		3F47C0DD1D918C30000214C6 /* CGPoint+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGPoint+Extensions.swift"; sourceTree = "<group>"; };
 		3F47C0DE1D918C30000214C6 /* GameData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameData.swift; sourceTree = "<group>"; };
 		3F47C0DF1D918C30000214C6 /* MyUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyUtils.swift; sourceTree = "<group>"; };
+		3F4D33C81DA2F5BA00E2A4F6 /* EnemySprite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnemySprite.swift; sourceTree = "<group>"; };
+		3F4D33CC1DA3092900E2A4F6 /* ProjectileSprite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProjectileSprite.swift; sourceTree = "<group>"; };
 		3F83ADEF1D944C3F00D6B686 /* HomeScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeScene.swift; sourceTree = "<group>"; };
-		3F83ADF11D945AE400D6B686 /* DiamondSprite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiamondSprite.swift; sourceTree = "<group>"; };
 		3F83ADF31D9466A200D6B686 /* LevelResults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelResults.swift; sourceTree = "<group>"; };
 		3F83ADF51D94675100D6B686 /* LevelFinishScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelFinishScene.swift; sourceTree = "<group>"; };
 		3F83ADF71D946CF800D6B686 /* GameOverScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameOverScene.swift; sourceTree = "<group>"; };
@@ -133,7 +135,8 @@
 		3F47C0E71D918CFC000214C6 /* Sprite */ = {
 			isa = PBXGroup;
 			children = (
-				3F83ADF11D945AE400D6B686 /* DiamondSprite.swift */,
+				3F4D33C81DA2F5BA00E2A4F6 /* EnemySprite.swift */,
+				3F4D33CC1DA3092900E2A4F6 /* ProjectileSprite.swift */,
 			);
 			name = Sprite;
 			sourceTree = "<group>";
@@ -178,7 +181,7 @@
 				TargetAttributes = {
 					3F47C0C01D918AE3000214C6 = {
 						CreatedOnToolsVersion = 8.0;
-						DevelopmentTeam = SS4L8LP7DE;
+						DevelopmentTeam = 86QCP25DMS;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -225,13 +228,14 @@
 				3F83ADF01D944C3F00D6B686 /* HomeScene.swift in Sources */,
 				3F47C0E21D918C30000214C6 /* GameData.swift in Sources */,
 				3F83ADF41D9466A200D6B686 /* LevelResults.swift in Sources */,
-				3F83ADF21D945AE400D6B686 /* DiamondSprite.swift in Sources */,
 				3F47C0E11D918C30000214C6 /* CGPoint+Extensions.swift in Sources */,
 				3F47C0CD1D918AE3000214C6 /* GameViewController.swift in Sources */,
 				3F47C0E01D918C30000214C6 /* CGFloat+Extensions.swift in Sources */,
 				3F83ADFC1D9475E400D6B686 /* MotionMonitor.swift in Sources */,
+				3F4D33CD1DA3092900E2A4F6 /* ProjectileSprite.swift in Sources */,
 				3F47C0E31D918C30000214C6 /* MyUtils.swift in Sources */,
 				3F83ADF61D94675100D6B686 /* LevelFinishScene.swift in Sources */,
+				3F4D33C91DA2F5BA00E2A4F6 /* EnemySprite.swift in Sources */,
 				3F83ADF81D946CF800D6B686 /* GameOverScene.swift in Sources */,
 				3F83ADFA1D9475A100D6B686 /* CGVector+Extensions.swift in Sources */,
 				3F47C0C51D918AE3000214C6 /* AppDelegate.swift in Sources */,
@@ -357,10 +361,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = SS4L8LP7DE;
+				DEVELOPMENT_TEAM = 86QCP25DMS;
 				INFOPLIST_FILE = Galaba/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.iosproject.Galaba.Zac;
+				PRODUCT_BUNDLE_IDENTIFIER = com.iosproject.Galaba;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 2;
@@ -371,10 +375,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = SS4L8LP7DE;
+				DEVELOPMENT_TEAM = 86QCP25DMS;
 				INFOPLIST_FILE = Galaba/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.iosproject.Galaba.Zac;
+				PRODUCT_BUNDLE_IDENTIFIER = com.iosproject.Galaba;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 2;

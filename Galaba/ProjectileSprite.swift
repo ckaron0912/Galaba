@@ -9,7 +9,7 @@
 import Foundation
 import SpriteKit
 
-class DiamondSprite: SKShapeNode{
+class ProjectileSprite: SKSpriteNode{
     
     // MARK - ivars -
     var fwd: CGPoint = CGPoint(x: 0.0, y: 0.0)
@@ -18,26 +18,23 @@ class DiamondSprite: SKShapeNode{
     var hit: Bool = false
     
     // MARK - Initialization -
-    init(size: CGSize, lineWidth: CGFloat, strokeColor: SKColor, fillColor: SKColor){
-        super.init()
+    init(){
+        let texture = SKTexture(imageNamed: "normal_shot")
+        super.init(texture: texture, color: SKColor.clear, size: texture.size())
         
-        let halfHeight = size.height/2
-        let halfWidth = size.width/2
-        let top = CGPoint(x: 0, y: halfHeight)
-        let right = CGPoint(x: halfWidth, y: 0)
-        let bottom = CGPoint(x: 0, y: -halfHeight)
-        let left = CGPoint(x: -halfWidth, y: 0)
+        self.name = "projectile"
         
-        let pathToDraw = CGMutablePath()
-        pathToDraw.move(to: top)
-        pathToDraw.addLine(to: right)
-        pathToDraw.addLine(to: bottom)
-        pathToDraw.addLine(to: left)
-        pathToDraw.closeSubpath()
-        path = pathToDraw
-        self.strokeColor = strokeColor
-        self.lineWidth = lineWidth
-        self.fillColor = fillColor
+        
+        self.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: self.frame.width - 10, height: (self.frame.height / 2) + 10))
+        self.physicsBody?.isDynamic = true
+        self.physicsBody?.categoryBitMask = PhysicsCategory.PProjectile
+        self.physicsBody?.contactTestBitMask = PhysicsCategory.Enemy
+        self.physicsBody?.collisionBitMask = PhysicsCategory.None
+        self.physicsBody?.usesPreciseCollisionDetection = true
+        self.zPosition = GameLayer.projectile
+        
+        self.zPosition = GameLayer.sprite
+        
     }
     
     required init?(coder aDecoder: NSCoder){

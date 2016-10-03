@@ -154,23 +154,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         totalSprites = totalSprites + howMany
         otherLabel.text = "Num Sprites: \(totalSprites)"
         var s: SKSpriteNode
-        
         for _ in 0...howMany-1{
             
-            let randY = randInRange(min: Int(playableRect.midY + 100), max: Int(playableRect.maxY - 50))
+            let randY = randInRange(min: Int(playableRect.maxY), max: Int(playableRect.maxY + 300))
             let randX = randInRange(min: Int(playableRect.minX + 50), max: Int(playableRect.maxX - 50))
-            s = SKSpriteNode(imageNamed: "enemy")
-            s.name = "enemy"
+            s = EnemySprite()
             s.position = CGPoint(x: randX, y: randY)
-            
-            s.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: s.frame.width - 10, height: s.frame.height / 2))
-            s.physicsBody?.isDynamic = true
-            s.physicsBody?.categoryBitMask = PhysicsCategory.Enemy
-            s.physicsBody?.contactTestBitMask = PhysicsCategory.PProjectile
-            s.physicsBody?.collisionBitMask = PhysicsCategory.None
-            s.physicsBody?.affectedByGravity = false
-            
-            s.zPosition = GameLayer.sprite
             addChild(s)
             
             /*//debug for enemy bounding box
@@ -212,6 +201,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             dt = 0
         }
+
         lastUpdateTime = currentTime
     }
     
@@ -219,10 +209,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if spritesMoving{
             
-            enumerateChildNodes(withName: "diamond", using: {
+            enumerateChildNodes(withName: "enemy", using: {
                 
                 node, stop in
-                let s = node as! DiamondSprite
+                let s = node as! EnemySprite
                 let halfWidth = s.frame.width/2
                 let halfHeight = s.frame.height/2
                 
@@ -236,10 +226,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
                 
                 // check top/bottom
-                if s.position.y <= (self.playableRect.midY + 100) + halfHeight || s.position.y >= self.playableRect.maxY - halfHeight{
+                if s.position.y <= self.playableRect.minY - halfHeight{
                     
-                    s.reflectY()
-                    s.update(dt: dt)
+                    s.removeFromParent()
                 }
             })
         }
@@ -341,15 +330,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if let playerSprite = childNode(withName: "ship"){
             
-            let projectile = SKSpriteNode(imageNamed: "normal_shot")
+            let projectile = ProjectileSprite()
             projectile.position = CGPoint(x: playerSprite.position.x, y: playerSprite.position.y + (playerSprite.frame.height / 2))
-            projectile.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: projectile.frame.width - 10, height: (projectile.frame.height / 2) + 10))
-            projectile.physicsBody?.isDynamic = true
-            projectile.physicsBody?.categoryBitMask = PhysicsCategory.PProjectile
-            projectile.physicsBody?.contactTestBitMask = PhysicsCategory.Enemy
-            projectile.physicsBody?.collisionBitMask = PhysicsCategory.None
-            projectile.physicsBody?.usesPreciseCollisionDetection = true
-            projectile.zPosition = GameLayer.projectile
             
             addChild(projectile)
             
@@ -395,7 +377,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func update(_ currentTime: TimeInterval){
         
         calculateDeltaTime(currentTime: currentTime)
-        //moveSprites(dt: CGFloat(dt))
+        moveSprites(dt: CGFloat(dt))
         movePlayer(dt: CGFloat(dt))
     }
 }
