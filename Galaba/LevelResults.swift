@@ -14,12 +14,14 @@ class LevelResults{
     let levelScore: Int
     let totalScore: Int
     let msg: String
+    let credits: Int
     
-    init(levelNum: Int, levelScore: Int, totalScore: Int, msg: String){
+    init(levelNum: Int, credits: Int, levelScore: Int, totalScore: Int, msg: String){
         
         self.levelNum = levelNum
         self.levelScore = levelScore
         self.totalScore = totalScore
         self.msg = msg
+        self.credits = credits
     }
 }

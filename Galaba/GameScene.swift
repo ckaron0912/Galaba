@@ -29,6 +29,7 @@ struct GameLayer {
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
+    var ship: ShipSprite
     var playableRect = CGRect.zero
     var tapCount = 0
     var totalSprites: Int = 0 {
@@ -48,6 +49,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     var totalScore: Int
+    var credits: Int
     var lastUpdateTime: TimeInterval = 0
     var dt: TimeInterval = 0
     var spritesMoving = false
@@ -57,13 +59,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let levelLabel = SKLabelNode(fontNamed: "Futura")
     let scoreLabel = SKLabelNode(fontNamed: "Futura")
     let otherLabel = SKLabelNode(fontNamed: "Futura")
+    let healthLabel = SKLabelNode(fontNamed: "Futura")
+    let creditsLabel = SKLabelNode(fontNamed: "Futura")
     
     // MARK: - Initialization -
     init(size: CGSize, scaleMode: SKSceneScaleMode, levelNum:Int, totalScore:Int, sceneManager:GameViewController){
         
+        self.ship = ShipSprite()
+        ship.fireRate = GameData.upgrades.playerFireRate
+        ship.maxHealth = GameData.upgrades.playerMaxHealth
+        ship.splitFire = GameData.upgrades.playerSplitFiring
         self.levelNum = levelNum
         self.totalScore = totalScore
         self.sceneManager = sceneManager
+        self.credits = GameData.playerStats.credits
         super.init(size: size)
         self.scaleMode = scaleMode
     }
@@ -98,6 +107,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         */
         
         playableRect = getPlayableRectPhonePortrait(size: size)
+        
+        ship.position = CGPoint(x: playableRect.midX, y: playableRect.midY - 250)
+        addChild(ship)
+        
         let fontSize = GameData.hud.fontSize
         let fontColor = GameData.hud.fontColorWhite
         let marginH = GameData.hud.marginH
@@ -121,11 +134,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreLabel.horizontalAlignmentMode = .left
         // next 2 lines calculate the max width of scoreLabel
         scoreLabel.text = "Score: \(levelScore)"
-        let scoreLabelWidth = scoreLabel.frame.size.width
         
+        let scoreLabelWidth = scoreLabel.frame.size.width
         scoreLabel.position = CGPoint(x: playableRect.maxX - scoreLabelWidth - marginH,y: playableRect.maxY - marginV)
         scoreLabel.zPosition = GameLayer.hud
         addChild(scoreLabel)
+        
+        creditsLabel.fontColor = fontColor
+        creditsLabel.fontSize = fontSize
+        creditsLabel.verticalAlignmentMode = .top
+        creditsLabel.horizontalAlignmentMode = .left
+        creditsLabel.text = "Credits: \(credits)"
+        
+        let credtisLabelWidth = creditsLabel.frame.size.width
+        creditsLabel.position = CGPoint(x: playableRect.maxX - credtisLabelWidth - marginH,y: playableRect.maxY - (marginV * 2) - 30)
+        creditsLabel.zPosition = GameLayer.hud
+        addChild(creditsLabel)
         
         otherLabel.fontColor = fontColor
         otherLabel.fontSize = fontSize
@@ -136,30 +160,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         otherLabel.zPosition = GameLayer.hud
         addChild(otherLabel)
         
+        healthLabel.fontColor = fontColor
+        healthLabel.fontSize = fontSize
+        healthLabel.position = CGPoint(x: marginH, y: playableRect.minY + (marginV * 2) + 30)
+        healthLabel.verticalAlignmentMode = .bottom
+        healthLabel.horizontalAlignmentMode = .left
+        healthLabel.text = "Health: \(ship.health)"
+        healthLabel.zPosition = GameLayer.hud
+        addChild(healthLabel)
+        
         let background = SKSpriteNode(imageNamed: "space_background")
         background.position = CGPoint(x: size.width/2, y: size.height/2)
         background.zPosition = GameLayer.background
         addChild(background)
-        
-        let ship = SKSpriteNode(imageNamed: "Spaceship")
-        ship.setScale(0.25)
-        ship.name = "ship"
-        ship.position = CGPoint(x: playableRect.midX, y: playableRect.midY - 250)
-        ship.zPosition = GameLayer.sprite
-        addChild(ship)
     }
     
     func makeSprites(howMany: Int){
         
         totalSprites = totalSprites + howMany
-        otherLabel.text = "Num Sprites: \(totalSprites)"
+        otherLabel.text = "Enemies left: \(totalSprites)"
         var s: SKSpriteNode
         for _ in 0...howMany-1{
             
             let randY = randInRange(min: Int(playableRect.maxY), max: Int(playableRect.maxY + 300))
             let randX = randInRange(min: Int(playableRect.minX + 50), max: Int(playableRect.maxX - 50))
-            
             s = EnemySprite()
+            s.setScale(0.75);
             s.position = CGPoint(x: randX, y: randY)
             addChild(s)
             
@@ -303,9 +329,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         projectile.removeFromParent()
         enemy.removeFromParent()
         
+        ship.projectilesFired -= 1
         totalSprites -= 1
         levelScore += 1
+        credits += 5
         totalScore += 1
+        
+        creditsLabel.text = "Credits: \(credits)"
+        let credtisLabelWidth = creditsLabel.frame.size.width
+        creditsLabel.position = CGPoint(x: playableRect.maxX - credtisLabelWidth - GameData.hud.marginH,y: playableRect.maxY - (GameData.hud.marginV * 2) - 30)
         
         if totalSprites > 0{
             
@@ -313,12 +345,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if levelNum < GameData.maxLevel{
-            
-            let results = LevelResults(levelNum: levelNum, levelScore: levelScore, totalScore: totalScore, msg: "You finished level \(levelNum)")
+            GameData.playerStats.credits = credits
+            let results = LevelResults(levelNum: levelNum, credits: credits, levelScore: levelScore, totalScore: totalScore, msg: "Wave \(levelNum) Complete")
             sceneManager.loadLevelFinishScene(results: results)
         } else {
-            
-            let results = LevelResults(levelNum: levelNum, levelScore: levelScore, totalScore: totalScore, msg: "You finished level \(levelNum)")
+            GameData.playerStats.credits = credits
+            let results = LevelResults(levelNum: levelNum, credits: credits, levelScore: levelScore, totalScore: totalScore, msg: "You finished level \(levelNum)")
             sceneManager.loadGameOverScene(results: results)
         }
     }
@@ -331,14 +363,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if let playerSprite = childNode(withName: "ship"){
             
-            let projectile = ProjectileSprite()
-            projectile.position = CGPoint(x: playerSprite.position.x, y: playerSprite.position.y + (playerSprite.frame.height / 2))
-            
-            addChild(projectile)
-            
-            let actionMove = SKAction.moveTo(y: playableRect.maxY + (projectile.frame.height / 2), duration: 0.5)
-            let actionMoveDone = SKAction.removeFromParent()
-            projectile.run(SKAction.sequence([actionMove, actionMoveDone]))
+            if(ship.projectilesFired < ship.fireRate){
+                
+                ship.projectilesFired += 1
+                let projectile = ProjectileSprite()
+                projectile.position = CGPoint(x: playerSprite.position.x, y: playerSprite.position.y + (projectile.frame.height / 2))
+                projectile.zPosition = GameLayer.projectile
+                
+                addChild(projectile)
+                
+                let actionMove = SKAction.moveTo(y: playableRect.maxY + (projectile.frame.height / 2), duration: 0.5)
+                let actionMoveDone = SKAction.removeFromParent()
+                projectile.run(SKAction.sequence([actionMove, actionMoveDone])){
+                    
+                    self.ship.projectilesFired -= 1
+                }
+            }
             
             /*//debug for projectile bounding box
             let size = CGSize(width: projectile.frame.width - 10, height: projectile.frame.height / 2 + 10)

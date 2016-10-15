@@ -44,7 +44,7 @@ class LevelFinishScene: SKScene{
         addChild(label)
         
         let label2 = SKLabelNode(fontNamed: GameData.font.mainFont)
-        label2.text = "You beat level \(results.levelNum)!"
+        label2.text = results.msg
         label2.fontSize = 70
         label2.position = CGPoint(x:size.width/2, y:size.height/2 + 100)
         label2.zPosition = GameLayer.hud
@@ -64,10 +64,30 @@ class LevelFinishScene: SKScene{
         label4.position = CGPoint(x:size.width/2, y:size.height/2 - 400)
         label4.zPosition = GameLayer.hud
         addChild(label4)
+        
+        let fireRateButton = SKSpriteNode(color: SKColor.blue, size: CGSize(width: 500, height: 500))
+        fireRateButton.position = CGPoint(x: 500, y: 1000)
+        fireRateButton.name = "fireRateButton"
+        fireRateButton.zPosition = GameLayer.sprite
+        addChild(fireRateButton);
     }
     
     // MARK - Events -
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         sceneManager.loadGameScene(levelNum: results.levelNum + 1, totalScore: results.totalScore)
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+        for touch: AnyObject in touches {
+            
+            let button = childNode(withName: "fireRateButton")!
+            let location = touch.location(in: self)
+            
+            if button.contains(location){
+                
+                print("pressed")
+            }
+        }
     }
 }

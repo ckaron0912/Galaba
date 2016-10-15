@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3F1FF74E1DB2B0A400AA5448 /* ShipSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F1FF74D1DB2B0A400AA5448 /* ShipSprite.swift */; };
 		3F47C0C51D918AE3000214C6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F47C0C41D918AE3000214C6 /* AppDelegate.swift */; };
 		3F47C0C71D918AE3000214C6 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 3F47C0C61D918AE3000214C6 /* GameScene.sks */; };
 		3F47C0C91D918AE3000214C6 /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = 3F47C0C81D918AE3000214C6 /* Actions.sks */; };
@@ -30,6 +31,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3F1FF74D1DB2B0A400AA5448 /* ShipSprite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShipSprite.swift; sourceTree = "<group>"; };
 		3F47C0C11D918AE3000214C6 /* Galaba.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Galaba.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F47C0C41D918AE3000214C6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3F47C0C61D918AE3000214C6 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -137,6 +139,7 @@
 			children = (
 				3F4D33C81DA2F5BA00E2A4F6 /* EnemySprite.swift */,
 				3F4D33CC1DA3092900E2A4F6 /* ProjectileSprite.swift */,
+				3F1FF74D1DB2B0A400AA5448 /* ShipSprite.swift */,
 			);
 			name = Sprite;
 			sourceTree = "<group>";
@@ -230,6 +233,7 @@
 				3F83ADF41D9466A200D6B686 /* LevelResults.swift in Sources */,
 				3F47C0E11D918C30000214C6 /* CGPoint+Extensions.swift in Sources */,
 				3F47C0CD1D918AE3000214C6 /* GameViewController.swift in Sources */,
+				3F1FF74E1DB2B0A400AA5448 /* ShipSprite.swift in Sources */,
 				3F47C0E01D918C30000214C6 /* CGFloat+Extensions.swift in Sources */,
 				3F83ADFC1D9475E400D6B686 /* MotionMonitor.swift in Sources */,
 				3F4D33CD1DA3092900E2A4F6 /* ProjectileSprite.swift in Sources */,

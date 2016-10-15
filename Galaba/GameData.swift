@@ -38,5 +38,15 @@ struct GameData{
         static let backgroundColor = SKColor.black
         static let backgroundImage = SKSpriteNode(imageNamed: "space_background")
     }
+    
+    struct upgrades{
+        static var playerFireRate = 2;
+        static var playerMaxHealth = 100;
+        static var playerSplitFiring = false
+    }
+    
+    struct playerStats{
+        static var credits = 0;
+    }
 }
 

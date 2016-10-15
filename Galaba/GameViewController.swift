@@ -52,6 +52,7 @@ class GameViewController: UIViewController {
     }
     
     func loadLevelFinishScene(results: LevelResults){
+        
         gameScene = nil
         let scene = LevelFinishScene(size: screenSize, scaleMode: scaleMode, results: results, sceneManager: self)
         let reveal = SKTransition.crossFade(withDuration: 1)
@@ -61,6 +62,7 @@ class GameViewController: UIViewController {
     }
     
     func loadGameOverScene(results: LevelResults){
+        
         gameScene = nil
         let scene = GameOverScene(size: screenSize, scaleMode: scaleMode, results: results, sceneManager: self)
         let reveal = SKTransition.crossFade(withDuration: 1)
