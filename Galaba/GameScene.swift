@@ -158,6 +158,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             let randY = randInRange(min: Int(playableRect.maxY), max: Int(playableRect.maxY + 300))
             let randX = randInRange(min: Int(playableRect.minX + 50), max: Int(playableRect.maxX - 50))
+            
             s = EnemySprite()
             s.position = CGPoint(x: randX, y: randY)
             addChild(s)
