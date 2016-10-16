@@ -40,9 +40,17 @@ struct GameData{
     }
     
     struct upgrades{
-        static var playerFireRate = 2;
+        static var defaultMaxProj = 0;
+        static var rapidMaxProj = 3;
+        static var defaultFireRate = 0.0;
+        static var rapidFireRate = 0.2;
         static var playerMaxHealth = 100;
         static var playerSplitFiring = false
+        
+        struct type{
+            static var none = 0;
+            static var rapid = 1;
+        }
     }
     
     struct playerStats{

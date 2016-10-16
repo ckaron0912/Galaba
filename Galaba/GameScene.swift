@@ -52,6 +52,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var credits: Int
     var lastUpdateTime: TimeInterval = 0
     var dt: TimeInterval = 0
+    var timer: Timer?
     var spritesMoving = false
     
     let sceneManager:GameViewController
@@ -66,15 +67,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     init(size: CGSize, scaleMode: SKSceneScaleMode, levelNum:Int, totalScore:Int, sceneManager:GameViewController){
         
         self.ship = ShipSprite()
-        ship.fireRate = GameData.upgrades.playerFireRate
-        ship.maxHealth = GameData.upgrades.playerMaxHealth
-        ship.splitFire = GameData.upgrades.playerSplitFiring
         self.levelNum = levelNum
         self.totalScore = totalScore
         self.sceneManager = sceneManager
         self.credits = GameData.playerStats.credits
+        self.timer = nil
         super.init(size: size)
         self.scaleMode = scaleMode
+        
+        // TODO: Make new timer based upon equipped weapon
+        self.timer = Timer.scheduledTimer(timeInterval: TimeInterval(GameData.upgrades.rapidFireRate), target: self, selector: #selector(fire), userInfo: nil, repeats: true)
     }
     
     required init?(coder aDecoder:NSCoder){
@@ -254,7 +256,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
                 // check top/bottom
                 if s.position.y <= self.playableRect.minY - halfHeight{
-                    
+                    // TODO: Manage 'lost' enemies
+                    self.makeSprites(howMany: 1)
+                    self.totalSprites -= 1
                     s.removeFromParent()
                 }
             })
@@ -263,7 +267,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func unpauseSprites(){
         
-        let unpauseAction = SKAction.sequence([SKAction.wait(forDuration: 2), SKAction.run({self.spritesMoving = true})])
+        let unpauseAction = SKAction.sequence([SKAction.wait(forDuration: 0.8), SKAction.run({self.spritesMoving = true})])
         
         run(unpauseAction)
     }
@@ -275,7 +279,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         xVelocity = xVelocity < -0.33 ? -0.33 : xVelocity
         xVelocity = xVelocity > 0.33 ? 0.33 : xVelocity
         
-        xVelocity = xVelocity * 3
+        xVelocity = xVelocity * 2.2
         
         if abs(xVelocity) < 0.1{
             
@@ -321,6 +325,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 projectileDidCollideWithEnemy(projectile: firstBody.node as! SKSpriteNode, enemy: secondBody.node as! SKSpriteNode)
             }
         }
+        
+        // TODO: Check for enemy to player collisions
+        // TODO: Check for enemy bullet to player collisions
     }
     
     func projectileDidCollideWithEnemy(projectile: SKSpriteNode, enemy: SKSpriteNode){
@@ -329,6 +336,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         projectile.removeFromParent()
         enemy.removeFromParent()
         
+        // Update vars
         ship.projectilesFired -= 1
         totalSprites -= 1
         levelScore += 1
@@ -357,68 +365,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
+        // TODO: Add/check button for press, then show store
         guard let touch = touches.first else {
             return
         }
         
-        if let playerSprite = childNode(withName: "ship"){
-            
-            if(ship.projectilesFired < ship.fireRate){
-                
-                ship.projectilesFired += 1
-                let projectile = ProjectileSprite()
-                projectile.position = CGPoint(x: playerSprite.position.x, y: playerSprite.position.y + (projectile.frame.height / 2))
-                projectile.zPosition = GameLayer.projectile
-                
-                addChild(projectile)
-                
-                let actionMove = SKAction.moveTo(y: playableRect.maxY + (projectile.frame.height / 2), duration: 0.5)
-                let actionMoveDone = SKAction.removeFromParent()
-                projectile.run(SKAction.sequence([actionMove, actionMoveDone])){
-                    
-                    self.ship.projectilesFired -= 1
-                }
-            }
-            
-            /*//debug for projectile bounding box
-            let size = CGSize(width: projectile.frame.width - 10, height: projectile.frame.height / 2 + 10)
-            let halfHeight = size.height / 2
-            let halfWidth = size.width / 2
-            
-            let topLeft = CGPoint(x: -halfWidth, y: halfHeight)
-            let topRight = CGPoint(x: halfWidth, y: halfHeight)
-            let bottomRight = CGPoint(x: halfWidth, y: -halfHeight)
-            let bottomLeft = CGPoint(x: -halfWidth, y: -halfHeight)
-            
-            let pathToDraw = CGMutablePath()
-            pathToDraw.move(to: topLeft)
-            pathToDraw.addLine(to: topRight)
-            pathToDraw.addLine(to: bottomRight)
-            pathToDraw.addLine(to: bottomLeft)
-            pathToDraw.closeSubpath()
-            
-            let box = SKShapeNode(path: pathToDraw)
-            
-            box.position = projectile.position
-            box.zPosition = GameLayer.projectile
-            box.strokeColor = SKColor.red
-            box.lineWidth = CGFloat(1)
-            box.fillColor = SKColor.red
-            
-            let actionBoxMove = SKAction.moveTo(y: playableRect.maxY + (box.frame.height / 2), duration: 0.5)
-            let actionBoxMoveDone = SKAction.removeFromParent()
-            box.run(SKAction.sequence([actionBoxMove, actionBoxMoveDone]))
-            
-            addChild(box)
-            */
+        if childNode(withName: "ship") != nil{
+            ship.isFiring = true
         }
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        ship.isFiring = false
     }
     
     //MARK: - Game Loop -
     override func update(_ currentTime: TimeInterval){
-        
         calculateDeltaTime(currentTime: currentTime)
         moveSprites(dt: CGFloat(dt))
         movePlayer(dt: CGFloat(dt))
+    }
+    
+    func fire() {
+        ship.fire()
     }
 }

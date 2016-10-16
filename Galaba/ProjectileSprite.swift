@@ -18,12 +18,12 @@ class ProjectileSprite: SKSpriteNode{
     var hit: Bool = false
     
     // MARK - Initialization -
-    init(){
+    init(position: CGPoint){
         let texture = SKTexture(imageNamed: "normal_shot")
         super.init(texture: texture, color: SKColor.clear, size: texture.size())
         
         self.name = "projectile"
-        
+        self.position = position
         
         self.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: self.frame.width - 10, height: (self.frame.height / 2) + 10))
         self.physicsBody?.isDynamic = true
@@ -32,8 +32,7 @@ class ProjectileSprite: SKSpriteNode{
         self.physicsBody?.collisionBitMask = PhysicsCategory.None
         self.physicsBody?.usesPreciseCollisionDetection = true
         self.zPosition = GameLayer.projectile
-        
-        self.zPosition = GameLayer.sprite
+        //self.zPosition = GameLayer.sprite
         
     }
     
