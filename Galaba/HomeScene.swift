@@ -55,6 +55,10 @@ class HomeScene: SKScene {
         label2.position = CGPoint(x:size.width/2, y:size.height/2 - 400)
         label2.zPosition = GameLayer.hud
         addChild(label2)
+        
+        let ship = ShipSprite()
+        ship.position = CGPoint(x: size.width/2, y: size.height/2 - 250)
+        addChild(ship)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

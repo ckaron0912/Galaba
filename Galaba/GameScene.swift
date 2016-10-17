@@ -256,9 +256,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
                 // check top/bottom
                 if s.position.y <= self.playableRect.minY - halfHeight{
+                    
                     // TODO: Manage 'lost' enemies
                     self.makeSprites(howMany: 1)
-                    self.totalSprites -= 1
+                    //self.totalSprites += 1
                     s.removeFromParent()
                 }
             })
@@ -345,21 +346,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         creditsLabel.text = "Credits: \(credits)"
         let credtisLabelWidth = creditsLabel.frame.size.width
-        creditsLabel.position = CGPoint(x: playableRect.maxX - credtisLabelWidth - GameData.hud.marginH,y: playableRect.maxY - (GameData.hud.marginV * 2) - 30)
+        creditsLabel.position = CGPoint(x: playableRect.maxX - credtisLabelWidth - GameData.hud.marginH, y: playableRect.maxY - (GameData.hud.marginV * 2) - 30)
         
         if totalSprites > 0{
             
             return
         }
         
-        if levelNum < GameData.maxLevel{
-            GameData.playerStats.credits = credits
-            let results = LevelResults(levelNum: levelNum, credits: credits, levelScore: levelScore, totalScore: totalScore, msg: "Wave \(levelNum) Complete")
-            sceneManager.loadLevelFinishScene(results: results)
-        } else {
-            GameData.playerStats.credits = credits
-            let results = LevelResults(levelNum: levelNum, credits: credits, levelScore: levelScore, totalScore: totalScore, msg: "You finished level \(levelNum)")
-            sceneManager.loadGameOverScene(results: results)
+        let finishAction = SKAction.moveTo(x: playableRect.midX, duration: 1)
+        
+        ship.run(finishAction){
+        
+            if self.levelNum < GameData.maxLevel{
+                GameData.playerStats.credits = self.credits
+                let results = LevelResults(levelNum: self.levelNum, credits: self.credits, levelScore: self.levelScore, totalScore: self.totalScore, msg: "Wave \(self.levelNum) Complete")
+                self.sceneManager.loadLevelFinishScene(results: results)
+            } else {
+                GameData.playerStats.credits = self.credits
+                let results = LevelResults(levelNum: self.levelNum, credits: self.credits, levelScore: self.levelScore, totalScore: self.totalScore, msg: "You finished level \(self.levelNum)")
+                self.sceneManager.loadGameOverScene(results: results)
+            }
         }
     }
     
@@ -370,8 +376,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             return
         }
         
-        if childNode(withName: "ship") != nil{
-            ship.isFiring = true
+        if let playerSprite = childNode(withName: "ship"){
+            
+            if childNode(withName: "ship") != nil{
+                ship.isFiring = true
+            }
         }
     }
     
@@ -386,7 +395,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         movePlayer(dt: CGFloat(dt))
     }
     
-    func fire() {
+    func fire(){
         ship.fire()
     }
 }

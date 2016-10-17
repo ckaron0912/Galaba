@@ -40,11 +40,17 @@ struct GameData{
     }
     
     struct upgrades{
+        static var fleetUpgradeAmount = 10
+        static var healthUpgradeAmount = 10
+        static var firRateUpgradeCost = 50
+        static var fleetUpgradeCost = 50
+        static var healthUpgradeCost = 50
+        
         static var defaultMaxProj = 0;
         static var rapidMaxProj = 3;
         static var defaultFireRate = 0.0;
         static var rapidFireRate = 0.2;
-        static var playerMaxHealth = 100;
+        static var playerMaxHealth = 100
         static var playerSplitFiring = false
         
         struct type{

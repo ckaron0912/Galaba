@@ -41,7 +41,6 @@ class ShipSprite: SKSpriteNode{
     var weaponRange: CGFloat = 680.0
     var splitFire: Bool = true
     var isFiring: Bool = false
-    
     var health: Int = 100{
         didSet{
             if(health < 0){
@@ -55,13 +54,13 @@ class ShipSprite: SKSpriteNode{
     
     // MARK - Initialization -
     init(){
+        
         let texture = SKTexture(imageNamed: "Spaceship")
         super.init(texture: texture, color: SKColor.clear, size: texture.size())
         
         self.name = "ship"
         self.setScale(0.25)
         self.zPosition = GameLayer.sprite
-        weaponType = GameData.upgrades.type.rapid
     }
     
     required init?(coder aDecoder: NSCoder){
@@ -93,10 +92,10 @@ class ShipSprite: SKSpriteNode{
             let actionMoveDone = SKAction.removeFromParent()
             projectileL.run(SKAction.sequence([actionMove, actionMoveDone])){
                 self.projectilesFired -= 1
-            }
+                }
             projectileR.run(SKAction.sequence([actionMove, actionMoveDone])){
                 self.projectilesFired -= 1
-            }
+                }
         } else {
             projectilesFired += 1
             let projectile = ProjectileSprite(position: CGPoint(x: position.x, y: position.y + 25))
@@ -108,7 +107,6 @@ class ShipSprite: SKSpriteNode{
                 self.projectilesFired -= 1
             }
         }
-        
     }
 }
 

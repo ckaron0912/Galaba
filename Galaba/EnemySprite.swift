@@ -33,6 +33,7 @@ class EnemySprite: SKSpriteNode{
         
         self.zPosition = GameLayer.sprite
         
+        //need a better solution for this, sprites can be off screen for a very long time
         self.fwd = CGPoint.randomUnitVector()
         
         if(fwd.y > 0){
@@ -62,4 +63,9 @@ class EnemySprite: SKSpriteNode{
         
         fwd.y *= CGFloat(-1.0)
     }
+    //need to figure out why this crashed when called within this class
+    /*private func randInRange(min: Int, max: Int) -> Int{
+     
+     return Int(arc4random_uniform(UInt32(max - min)) + UInt32(min))
+     }*/
 }

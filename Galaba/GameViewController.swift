@@ -37,7 +37,7 @@ class GameViewController: UIViewController {
     func loadHomeScene() {
         
         let scene = HomeScene(size: screenSize, scaleMode: scaleMode, sceneManager: self)
-        let reveal = SKTransition.crossFade(withDuration: 1)
+        let reveal = SKTransition.crossFade(withDuration: 2)
         skView.presentScene(scene, transition: reveal)
     }
     
@@ -45,7 +45,7 @@ class GameViewController: UIViewController {
         
         gameScene = GameScene(size: screenSize, scaleMode: scaleMode, levelNum: levelNum, totalScore: totalScore, sceneManager: self)
         
-        let reveal = SKTransition.doorsOpenHorizontal(withDuration: 1)
+        let reveal = SKTransition.crossFade(withDuration: 2)
         skView.presentScene(gameScene!, transition: reveal)
         
         MotionMonitor.sharedMotionMonitor.startUpdates()
@@ -55,7 +55,7 @@ class GameViewController: UIViewController {
         
         gameScene = nil
         let scene = LevelFinishScene(size: screenSize, scaleMode: scaleMode, results: results, sceneManager: self)
-        let reveal = SKTransition.crossFade(withDuration: 1)
+        let reveal = SKTransition.crossFade(withDuration: 2)
         skView.presentScene(scene, transition: reveal)
         
         MotionMonitor.sharedMotionMonitor.stopUpdates()
@@ -65,7 +65,7 @@ class GameViewController: UIViewController {
         
         gameScene = nil
         let scene = GameOverScene(size: screenSize, scaleMode: scaleMode, results: results, sceneManager: self)
-        let reveal = SKTransition.crossFade(withDuration: 1)
+        let reveal = SKTransition.crossFade(withDuration: 2)
         skView.presentScene(scene, transition: reveal)
     }
     
