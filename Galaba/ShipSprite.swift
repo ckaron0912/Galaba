@@ -55,6 +55,15 @@ class ShipSprite: SKSpriteNode{
         
         self.name = "ship"
         self.setScale(0.25)
+        
+        
+        self.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: self.frame.width - 10, height: self.frame.height / 2))
+        self.physicsBody?.isDynamic = true
+        self.physicsBody?.categoryBitMask = PhysicsCategory.Player
+        self.physicsBody?.contactTestBitMask = PhysicsCategory.EProjectile
+        self.physicsBody?.collisionBitMask = PhysicsCategory.None
+        self.physicsBody?.affectedByGravity = false
+        
         self.zPosition = GameLayer.sprite
     }
     

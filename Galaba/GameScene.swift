@@ -282,16 +282,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
                 // check top/bottom
                 if s.position.y <= self.playableRect.minY - halfHeight{
-                    
                     GameData.upgrades.fleetHealth -= 10
                     self.fleetLabel.text = "Fleet strength: \(GameData.upgrades.fleetHealth)"
                     let fleetLabelWidth = self.fleetLabel.frame.size.width
                     self.fleetLabel.position = CGPoint(x: self.playableRect.maxX - fleetLabelWidth - GameData.hud.marginH, y: self.playableRect.minY + GameData.hud.marginV)
-                    // TODO: Manage 'lost' enemies
-                    //self.makeSprites(howMany: 1)
                     self.totalSprites -= 1
                     s.removeFromParent()
                 }
+                
+                // Check for fire
+                if abs(s.position.x - self.ship.position.x) < 50 && s.lastFired - TimeInterval(0.01) > self.lastUpdateTime {
+                    print(self.lastUpdateTime)
+                    s.lastFired = self.lastUpdateTime
+                    
+                    let projectile = ProjectileSprite(position: CGPoint(x: s.position.x, y: s.position.y - 25))
+                    projectile.physicsBody?.categoryBitMask = PhysicsCategory.EProjectile
+                    self.addChild(projectile)
+                    
+                    let actionMove = SKAction.moveTo(y: 500, duration: 2.5)
+                    let actionMoveDone = SKAction.removeFromParent()
+                    projectile.run(SKAction.sequence([actionMove, actionMoveDone])){}
+                }
+                
             })
         }
     }
@@ -380,6 +392,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             secondBody = contact.bodyA
         }
         
+        // Check for bullet to enemy collision
         if ((firstBody.categoryBitMask & PhysicsCategory.Enemy != 0) && (secondBody.categoryBitMask & PhysicsCategory.PProjectile != 0)){
             if (firstBody.node != nil && secondBody.node != nil ) {
                 projectileDidCollideWithEnemy(projectile: firstBody.node as! SKSpriteNode, enemy: secondBody.node as! SKSpriteNode)
@@ -387,7 +400,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         // TODO: Check for enemy to player collisions
-        // TODO: Check for enemy bullet to player collisions
+        
+        // Check for enemy bullet to player collisions
+        if ((firstBody.categoryBitMask & PhysicsCategory.Player != 0) && (secondBody.categoryBitMask & PhysicsCategory.EProjectile != 0)){
+            if (firstBody.node != nil && secondBody.node != nil ) {
+                projectileDidCollideWithPlayer(projectile: secondBody.node as! SKSpriteNode, player: firstBody.node as! SKSpriteNode)
+            }
+        }
     }
     
     func projectileDidCollideWithEnemy(projectile: SKSpriteNode, enemy: SKSpriteNode){
@@ -423,6 +442,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let scoreLabelWidth = scoreLabel.frame.size.width
         scoreLabel.position = CGPoint(x: playableRect.maxX - scoreLabelWidth - GameData.hud.marginH,y: playableRect.maxY - GameData.hud.marginV)
+    }
+    
+    func projectileDidCollideWithPlayer(projectile: SKSpriteNode, player: SKSpriteNode){
+        
+        print("Player Hit!")
+        projectile.removeFromParent()
+        
+        run(SKAction.playSoundFileNamed("bomb.wav", waitForCompletion: false))
+        
+        let sparkEmitter = SKEmitterNode(fileNamed: "sparks")!
+        sparkEmitter.particlePosition = CGPoint(x: projectile.position.x + (projectile.size.width/2), y: projectile.position.y + (projectile.size.height/2))
+        sparkEmitter.zPosition = GameLayer.sprite
+        self.addChild(sparkEmitter)
+        self.run(SKAction.wait(forDuration: 2), completion: {sparkEmitter.removeFromParent()})
+        
+        // Update vars
+        ship.health -= 10
+        healthLabel.text = "Health: \(ship.health)"
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

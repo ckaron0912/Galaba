@@ -16,6 +16,7 @@ class EnemySprite: SKSpriteNode{
     var velocity: CGPoint = CGPoint.zero
     var delta: CGFloat = GameData.scene.enemySpeed + GameData.scene.enemySpeedIncrease
     var hit: Bool = false
+    var lastFired: TimeInterval = TimeInterval(exactly: 99999.0)!
     
     // MARK - Initialization -
     init(){
