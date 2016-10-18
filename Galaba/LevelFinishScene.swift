@@ -15,13 +15,17 @@ class LevelFinishScene: SKScene{
     let results: LevelResults
     let button: SKLabelNode = SKLabelNode(fontNamed: GameData.font.mainFont)
     var healthUpgradeCostLabel: SKLabelNode
+    var fleetUpgradeCostLabel: SKLabelNode
+    var repairCostLabel: SKLabelNode
     var creditsLabel: SKLabelNode
     
     // MARK - Initialization -
     init(size: CGSize, scaleMode: SKSceneScaleMode, results: LevelResults, sceneManager: GameViewController){
         
         self.healthUpgradeCostLabel = SKLabelNode(fontNamed: GameData.font.mainFont)
+        self.fleetUpgradeCostLabel = SKLabelNode(fontNamed: GameData.font.mainFont)
         self.creditsLabel = SKLabelNode(fontNamed: GameData.font.mainFont)
+        self.repairCostLabel = SKLabelNode(fontNamed: GameData.font.mainFont)
         self.results = results
         self.sceneManager = sceneManager
         super.init(size: size)
@@ -61,14 +65,6 @@ class LevelFinishScene: SKScene{
         label3.zPosition = GameLayer.hud
         addChild(label3)
         
-        let label4 = SKLabelNode(fontNamed: GameData.font.mainFont)
-        label4.text = "Tap to continue"
-        label4.fontColor = UIColor.red
-        label4.fontSize = 70
-        label4.position = CGPoint(x:size.width/2, y:size.height/2 - 400)
-        label4.zPosition = GameLayer.hud
-        addChild(label4)
-        
         creditsLabel.text = "Credits: \(GameData.playerStats.credits)"
         creditsLabel.fontSize = 40
         creditsLabel.position = CGPoint(x:size.width/2, y:size.height/2 + 150)
@@ -76,6 +72,7 @@ class LevelFinishScene: SKScene{
         creditsLabel.name = "creditsLabel"
         addChild(creditsLabel)
         
+        // shop items
         let healthUpgradeLabel = SKLabelNode(fontNamed: GameData.font.mainFont)
         healthUpgradeLabel.text = "Health Upgrade"
         healthUpgradeLabel.fontSize = 25
@@ -96,9 +93,52 @@ class LevelFinishScene: SKScene{
         healthUpgradeButton.zPosition = GameLayer.sprite
         addChild(healthUpgradeButton);
         
-        //will be changing text on this
-        let continueButton = SKSpriteNode(imageNamed: "Purchase_button")
-        continueButton.position = CGPoint(x: size.width/2, y: size.height/2 - 200)
+        let fleetUpgradeLabel = SKLabelNode(fontNamed: GameData.font.mainFont)
+        fleetUpgradeLabel.text = "Fleet upgrade"
+        fleetUpgradeLabel.fontSize = 25
+        fleetUpgradeLabel.position = CGPoint(x: size.width/2, y: size.height/2)
+        fleetUpgradeLabel.zPosition = GameLayer.hud
+        addChild(fleetUpgradeLabel)
+        
+        fleetUpgradeCostLabel.text = "Cost: \(GameData.upgrades.fleetUpgradeCost)"
+        fleetUpgradeCostLabel.fontSize = 25
+        fleetUpgradeCostLabel.position = CGPoint(x: size.width/2, y: size.height/2 - 30)
+        fleetUpgradeCostLabel.name = "fleetUpgradeCostLabel"
+        fleetUpgradeCostLabel.zPosition = GameLayer.hud
+        addChild(fleetUpgradeCostLabel)
+        
+        let fleetUpgradeButton = SKSpriteNode(imageNamed: "Purchase_button")
+        fleetUpgradeButton.position = CGPoint(x: size.width/2, y: size.height/2 - 100)
+        fleetUpgradeButton.name = "fleetUpgradeButton"
+        fleetUpgradeButton.zPosition = GameLayer.sprite
+        addChild(fleetUpgradeButton);
+        
+        let repairLabel = SKLabelNode(fontNamed: GameData.font.mainFont)
+        repairLabel.text = "Ship repair"
+        repairLabel.fontSize = 25
+        repairLabel.position = CGPoint(x: size.width/2 - 300, y: size.height/2)
+        repairLabel.zPosition = GameLayer.hud
+        addChild(repairLabel)
+        
+        repairCostLabel.text = "Cost: \(GameData.upgrades.repairCost)"
+        repairCostLabel.fontSize = 25
+        repairCostLabel.position = CGPoint(x: size.width/2 - 300, y: size.height/2 - 30)
+        repairCostLabel.name = "repairCostLabel"
+        repairCostLabel.zPosition = GameLayer.hud
+        addChild(repairCostLabel)
+        
+        let repairButton = SKSpriteNode(imageNamed: "Purchase_button")
+        repairButton.position = CGPoint(x: size.width/2 - 300, y: size.height/2 - 100)
+        repairButton.name = "repairButton"
+        repairButton.zPosition = GameLayer.sprite
+        addChild(repairButton);
+        
+        // Continue
+        let continueButton = SKLabelNode(fontNamed: GameData.font.mainFont)
+        continueButton.fontColor = UIColor.red
+        continueButton.text = "Press here to continue"
+        continueButton.fontSize = 70
+        continueButton.position = CGPoint(x:size.width/2, y:size.height/2 - 400)
         continueButton.name = "continueButton"
         continueButton.zPosition = GameLayer.sprite
         addChild(continueButton);
@@ -118,7 +158,9 @@ class LevelFinishScene: SKScene{
         for touch: AnyObject in touches {
             
             let healthUpgradebutton = childNode(withName: "healthUpgradeButton")!
+            let fleetUpgradeButton = childNode(withName: "fleetUpgradeButton")!
             let continueButton = childNode(withName: "continueButton")!
+            let repairButton = childNode(withName: "repairButton")!
             let location = touch.location(in: self)
             
             if healthUpgradebutton.contains(location){
@@ -129,6 +171,28 @@ class LevelFinishScene: SKScene{
                     GameData.upgrades.healthUpgradeCost += 25
                     GameData.upgrades.playerMaxHealth += GameData.upgrades.healthUpgradeAmount
                     healthUpgradeCostLabel.text = "Cost: \(GameData.upgrades.healthUpgradeCost)"
+                    creditsLabel.text = "Credits: \(GameData.playerStats.credits)"
+                }
+            }
+            
+            if fleetUpgradeButton.contains(location){
+                if(GameData.upgrades.fleetUpgradeCost <= GameData.playerStats.credits){
+                    
+                    GameData.playerStats.credits -= GameData.upgrades.fleetUpgradeCost
+                    GameData.upgrades.fleetUpgradeCost += 50
+                    GameData.upgrades.fleetHealth += GameData.upgrades.fleetUpgradeAmount
+                    fleetUpgradeCostLabel.text = "Cost: \(GameData.upgrades.fleetUpgradeCost)"
+                    creditsLabel.text = "Credits: \(GameData.playerStats.credits)"
+                }
+            }
+            
+            if repairButton.contains(location){
+                
+                if(GameData.playerStats.credits >= GameData.upgrades.repairCost){
+                    GameData.playerStats.credits -= GameData.upgrades.repairCost
+                    GameData.upgrades.playerHealth = GameData.upgrades.playerMaxHealth
+                    GameData.upgrades.repairCost += 5
+                    repairCostLabel.text = "Cost: \(GameData.upgrades.repairCost)"
                     creditsLabel.text = "Credits: \(GameData.playerStats.credits)"
                 }
             }

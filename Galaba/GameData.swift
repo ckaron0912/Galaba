@@ -37,30 +37,51 @@ struct GameData{
     struct scene {
         static let backgroundColor = SKColor.black
         static let backgroundImage = SKSpriteNode(imageNamed: "space_background")
+        static var backgroundPosition = CGPoint(x: 0, y: 0)
+        static var numEnemiesToSpawn = 10
+        static let numEnemiesToIncrease = 3
+        static var enemySpeed = CGFloat(100.0)
+        static var enemySpeedIncrease = CGFloat(0.0)
     }
     
     struct upgrades{
-        static var fleetUpgradeAmount = 10
+        static var fleetUpgradeAmount = 50
         static var healthUpgradeAmount = 10
         static var firRateUpgradeCost = 50
         static var fleetUpgradeCost = 50
         static var healthUpgradeCost = 50
+        static var repairCost = 5
         
-        static var defaultMaxProj = 0;
-        static var rapidMaxProj = 3;
-        static var defaultFireRate = 0.0;
-        static var rapidFireRate = 0.2;
+        static var fleetHealth = 200{
+            didSet{
+                if fleetHealth < 0{
+                    fleetHealth = 0
+                }
+            }
+        }
+        static var defaultMaxProj = 0
+        static var rapidMaxProj = 3
+        static var defaultFireRate = 0.0
+        static var rapidFireRate = 0.2
         static var playerMaxHealth = 100
         static var playerSplitFiring = false
+        static var playerHealth = 100
         
         struct type{
-            static var none = 0;
-            static var rapid = 1;
+            static var none = 0
+            static var rapid = 1
         }
     }
     
     struct playerStats{
-        static var credits = 0;
+        static var credits = 0{
+            didSet{
+                if credits < 0{
+                    credits = 0
+                }
+            }
+        }
+        static var score = 0
     }
 }
 

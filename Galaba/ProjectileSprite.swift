@@ -12,10 +12,6 @@ import SpriteKit
 class ProjectileSprite: SKSpriteNode{
     
     // MARK - ivars -
-    var fwd: CGPoint = CGPoint(x: 0.0, y: 0.0)
-    var velocity: CGPoint = CGPoint.zero
-    var delta: CGFloat = 300.0
-    var hit: Bool = false
     
     // MARK - Initialization -
     init(position: CGPoint){
@@ -40,19 +36,4 @@ class ProjectileSprite: SKSpriteNode{
     }
     
     // MARK - Methods -
-    func update(dt: CGFloat){
-        
-        velocity = fwd * delta
-        position = position + velocity * dt
-    }
-    
-    func reflectX(){
-        
-        fwd.x *= CGFloat(-1.0)
-    }
-    
-    func reflectY(){
-        
-        fwd.y *= CGFloat(-1.0)
-    }
 }

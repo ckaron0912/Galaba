@@ -14,7 +14,7 @@ class EnemySprite: SKSpriteNode{
     // MARK - ivars -
     var fwd: CGPoint = CGPoint(x: 0.0, y: 0.0)
     var velocity: CGPoint = CGPoint.zero
-    var delta: CGFloat = 100.0
+    var delta: CGFloat = GameData.scene.enemySpeed + GameData.scene.enemySpeedIncrease
     var hit: Bool = false
     
     // MARK - Initialization -

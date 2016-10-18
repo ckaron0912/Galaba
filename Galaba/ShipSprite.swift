@@ -12,10 +12,6 @@ import SpriteKit
 class ShipSprite: SKSpriteNode{
     
     // MARK - ivars -
-    var fwd: CGPoint = CGPoint(x: 0.0, y: 0.0)
-    var velocity: CGPoint = CGPoint.zero
-    var delta: CGFloat = 100.0
-    var hit: Bool = false
     var projectilesFired: Int = 0
     var maxHealth: Int = 100
     var maxProjectiles: Int = 0
@@ -41,20 +37,19 @@ class ShipSprite: SKSpriteNode{
     var weaponRange: CGFloat = 680.0
     var splitFire: Bool = true
     var isFiring: Bool = false
-    var health: Int = 100{
+    var health: Int = GameData.upgrades.playerHealth{
         didSet{
-            if(health < 0){
-                health = 0
+            if(GameData.upgrades.playerHealth < 0){
+                GameData.upgrades.playerHealth = 0
             }
-            if(health > maxHealth){
-                health = maxHealth
+            if(GameData.upgrades.playerHealth > maxHealth){
+                GameData.upgrades.playerHealth = maxHealth
             }
         }
     }
     
     // MARK - Initialization -
     init(){
-        
         let texture = SKTexture(imageNamed: "Spaceship")
         super.init(texture: texture, color: SKColor.clear, size: texture.size())
         
@@ -69,11 +64,6 @@ class ShipSprite: SKSpriteNode{
     }
     
     // MARK - Methods -
-    func update(dt: CGFloat){
-        velocity = fwd * delta
-        position = position + velocity * dt
-    }
-    
     func fire(){
         // TODO: Add actual weapon switching -> Timer Todo
         weaponType = GameData.upgrades.type.rapid
@@ -107,6 +97,9 @@ class ShipSprite: SKSpriteNode{
                 self.projectilesFired -= 1
             }
         }
+        
+        // Shooting sound
+        run(SKAction.playSoundFileNamed("laserBlast.wav", waitForCompletion: false))
     }
 }
 

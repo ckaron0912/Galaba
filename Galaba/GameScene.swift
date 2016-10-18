@@ -40,7 +40,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     var levelNum: Int
-    var levelScore: Int = 0 {
+    var levelScore: Int = GameData.playerStats.score {
         
         willSet(score){
             
@@ -62,6 +62,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let otherLabel = SKLabelNode(fontNamed: "Futura")
     let healthLabel = SKLabelNode(fontNamed: "Futura")
     let creditsLabel = SKLabelNode(fontNamed: "Futura")
+    let fleetLabel = SKLabelNode(fontNamed: "Futura")
     
     // MARK: - Initialization -
     init(size: CGSize, scaleMode: SKSceneScaleMode, levelNum:Int, totalScore:Int, sceneManager:GameViewController){
@@ -90,7 +91,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         physicsWorld.contactDelegate = self
         
-        makeSprites(howMany: 10)
+        makeSprites(howMany: GameData.scene.numEnemiesToSpawn)
         unpauseSprites()
     }
     
@@ -162,6 +163,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         otherLabel.zPosition = GameLayer.hud
         addChild(otherLabel)
         
+        fleetLabel.fontColor = fontColor
+        fleetLabel.fontSize = fontSize
+        
+        fleetLabel.text = "Fleet strength: \(GameData.upgrades.fleetHealth)"
+        let fleetLabelWidth = fleetLabel.frame.size.width
+        fleetLabel.position = CGPoint(x: playableRect.maxX - fleetLabelWidth - marginH, y: playableRect.minY + marginV)
+        fleetLabel.verticalAlignmentMode = .bottom
+        fleetLabel.horizontalAlignmentMode = .left
+        fleetLabel.zPosition = GameLayer.hud
+        addChild(fleetLabel)
+        
         healthLabel.fontColor = fontColor
         healthLabel.fontSize = fontSize
         healthLabel.position = CGPoint(x: marginH, y: playableRect.minY + (marginV * 2) + 30)
@@ -171,10 +183,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         healthLabel.zPosition = GameLayer.hud
         addChild(healthLabel)
         
-        let background = SKSpriteNode(imageNamed: "space_background")
-        background.position = CGPoint(x: size.width/2, y: size.height/2)
+        let background = SKSpriteNode(imageNamed: "background")
+        
+        if(GameData.scene.backgroundPosition.y == 0){
+            background.position = CGPoint(x: size.width/2, y: size.height/2 + 400)
+        }else{
+            background.position = GameData.scene.backgroundPosition
+        }
         background.zPosition = GameLayer.background
+        background.name = "background"
         addChild(background)
+        
+        let moveAction = SKAction.moveTo(y: background.position.y - 810, duration: 500)
+        
+        background.run(moveAction)
+        let music = SKAudioNode(fileNamed: "backgroundMusic.wav")
+        music.autoplayLooped = true;
+        addChild(music)
+        music.run(SKAction.play())
     }
     
     func makeSprites(howMany: Int){
@@ -257,9 +283,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 // check top/bottom
                 if s.position.y <= self.playableRect.minY - halfHeight{
                     
+                    GameData.upgrades.fleetHealth -= 10
+                    self.fleetLabel.text = "Fleet strength: \(GameData.upgrades.fleetHealth)"
+                    let fleetLabelWidth = self.fleetLabel.frame.size.width
+                    self.fleetLabel.position = CGPoint(x: self.playableRect.maxX - fleetLabelWidth - GameData.hud.marginH, y: self.playableRect.minY + GameData.hud.marginV)
                     // TODO: Manage 'lost' enemies
-                    self.makeSprites(howMany: 1)
-                    //self.totalSprites += 1
+                    //self.makeSprites(howMany: 1)
+                    self.totalSprites -= 1
                     s.removeFromParent()
                 }
             })
@@ -305,6 +335,35 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         return Int(arc4random_uniform(UInt32(max - min)) + UInt32(min))
     }
     
+    // Check for wave and game end conditions
+    func checkForEnd(){
+        
+        guard totalSprites == 0 || GameData.upgrades.fleetHealth <= 0 else{
+            return
+        }
+        
+        let finishAction = SKAction.moveTo(x: playableRect.midX, duration: 1)
+        
+        ship.run(finishAction, completion: {
+            
+            if GameData.upgrades.fleetHealth > 0{
+                GameData.playerStats.credits = self.credits
+                let background = self.childNode(withName: "background")!
+                GameData.scene.backgroundPosition = background.position
+                GameData.scene.enemySpeedIncrease += 2
+                GameData.scene.numEnemiesToSpawn += GameData.scene.numEnemiesToIncrease
+                GameData.playerStats.score += self.levelScore
+                
+                let results = LevelResults(levelNum: self.levelNum, credits: self.credits, levelScore: self.levelScore, totalScore: self.totalScore, msg: "Wave \(self.levelNum) Complete")
+                self.sceneManager.loadLevelFinishScene(results: results)
+            } else{
+                GameData.playerStats.credits = self.credits
+                let results = LevelResults(levelNum: self.levelNum, credits: self.credits, levelScore: self.levelScore, totalScore: self.totalScore, msg: "You finished level \(self.levelNum)")
+                self.sceneManager.loadGameOverScene(results: results)
+            }
+        })
+    }
+    
     //MARK: - Events -
     func didBegin(_ contact: SKPhysicsContact){
         
@@ -336,6 +395,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         print("Hit!")
         projectile.removeFromParent()
         enemy.removeFromParent()
+        run(SKAction.playSoundFileNamed("bomb.wav", waitForCompletion: false))
+        
+        // Emitters
+        let explodeEmitter = SKEmitterNode(fileNamed: "explode")!
+        explodeEmitter.particlePosition = enemy.position
+        explodeEmitter.zPosition = GameLayer.sprite
+        self.addChild(explodeEmitter)
+        self.run(SKAction.wait(forDuration: 2), completion: {explodeEmitter.removeFromParent()})
+        
+        let sparkEmitter = SKEmitterNode(fileNamed: "sparks")!
+        sparkEmitter.particlePosition = CGPoint(x: projectile.position.x + (projectile.size.width/2), y: projectile.position.y + (projectile.size.height/2))
+        sparkEmitter.zPosition = GameLayer.sprite
+        self.addChild(sparkEmitter)
+        self.run(SKAction.wait(forDuration: 2), completion: {sparkEmitter.removeFromParent()})
         
         // Update vars
         ship.projectilesFired -= 1
@@ -348,25 +421,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let credtisLabelWidth = creditsLabel.frame.size.width
         creditsLabel.position = CGPoint(x: playableRect.maxX - credtisLabelWidth - GameData.hud.marginH, y: playableRect.maxY - (GameData.hud.marginV * 2) - 30)
         
-        if totalSprites > 0{
-            
-            return
-        }
-        
-        let finishAction = SKAction.moveTo(x: playableRect.midX, duration: 1)
-        
-        ship.run(finishAction){
-        
-            if self.levelNum < GameData.maxLevel{
-                GameData.playerStats.credits = self.credits
-                let results = LevelResults(levelNum: self.levelNum, credits: self.credits, levelScore: self.levelScore, totalScore: self.totalScore, msg: "Wave \(self.levelNum) Complete")
-                self.sceneManager.loadLevelFinishScene(results: results)
-            } else {
-                GameData.playerStats.credits = self.credits
-                let results = LevelResults(levelNum: self.levelNum, credits: self.credits, levelScore: self.levelScore, totalScore: self.totalScore, msg: "You finished level \(self.levelNum)")
-                self.sceneManager.loadGameOverScene(results: results)
-            }
-        }
+        let scoreLabelWidth = scoreLabel.frame.size.width
+        scoreLabel.position = CGPoint(x: playableRect.maxX - scoreLabelWidth - GameData.hud.marginH,y: playableRect.maxY - GameData.hud.marginV)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -390,6 +446,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //MARK: - Game Loop -
     override func update(_ currentTime: TimeInterval){
+        checkForEnd()
         calculateDeltaTime(currentTime: currentTime)
         moveSprites(dt: CGFloat(dt))
         movePlayer(dt: CGFloat(dt))
